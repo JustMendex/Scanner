@@ -1,0 +1,6 @@
+module Pods_Scanner_ScannerTests {
+  umbrella header "Pods-Scanner-ScannerTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

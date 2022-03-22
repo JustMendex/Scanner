@@ -104,17 +104,19 @@ const Text: React.AbstractComponent<TextProps, HTMLElement & PlatformMethods> = 
       onStartShouldSetResponderCapture
     });
 
-    function handleClick(e) {
-      if (onClick != null) {
-        onClick(e);
-      }
-      if (onClick == null && onPress != null) {
-        e.stopPropagation();
-        onPress(e);
-      }
-    }
+    const handleClick = React.useCallback(
+      (e) => {
+        if (onClick != null) {
+          onClick(e);
+        } else if (onPress != null) {
+          e.stopPropagation();
+          onPress(e);
+        }
+      },
+      [onClick, onPress]
+    );
 
-    const component = hasTextAncestor ? 'span' : 'div';
+    let component = hasTextAncestor ? 'span' : 'div';
     const supportedProps = pickProps(props);
     supportedProps.classList = classList;
     supportedProps.dir = dir;
@@ -122,18 +124,25 @@ const Text: React.AbstractComponent<TextProps, HTMLElement & PlatformMethods> = 
     if (!hasTextAncestor) {
       supportedProps.dir = dir != null ? dir : 'auto';
     }
-    supportedProps.onClick = handleClick;
+
+    if (onClick || onPress) {
+      supportedProps.onClick = handleClick;
+    }
+
     supportedProps.style = style;
-    if (props.href != null && hrefAttrs != null) {
-      const { download, rel, target } = hrefAttrs;
-      if (download != null) {
-        supportedProps.download = download;
-      }
-      if (rel != null) {
-        supportedProps.rel = rel;
-      }
-      if (typeof target === 'string') {
-        supportedProps.target = target.charAt(0) !== '_' ? '_' + target : target;
+    if (props.href != null) {
+      component = 'a';
+      if (hrefAttrs != null) {
+        const { download, rel, target } = hrefAttrs;
+        if (download != null) {
+          supportedProps.download = download;
+        }
+        if (rel != null) {
+          supportedProps.rel = rel;
+        }
+        if (typeof target === 'string') {
+          supportedProps.target = target.charAt(0) !== '_' ? '_' + target : target;
+        }
       }
     }
 
@@ -175,7 +184,7 @@ const classes = css.create({
     maxWidth: '100%',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'pre'
   },
   // See #13
   textMultiLine: {

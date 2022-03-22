@@ -14,7 +14,7 @@ import type {SchemaType} from '../../CodegenSchema.js';
 
 function parse(filename: string): ?SchemaType {
   try {
-    // $FlowFixMe[unsupported-syntax] Can't require dynamic variables
+    // $FlowFixMe Can't require dynamic variables
     return require(filename);
   } catch (err) {
     // Ignore

@@ -7,6 +7,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
+    "plugins": ["react-native-nfc-manager"],
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -15,14 +16,17 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ceascanner"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
+    },
+    "android": {
+      "package": "com.ceascanner",
+      "permissions": ["android.permission.NFC"]
     }
   }
 }

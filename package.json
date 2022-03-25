@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "expo start",
-    "ios": "expo start --ios",
-    "android": "expo start --android",
+    "start": "expo start --dev-client",
+    "ios": "expo run:ios",
+    "android": "expo run:android",
     "test:e2e": "./bin/downloadExpoApp.sh && detox test --configuration ios.sim.expo",
     "build:e2e": "detox build -c ios.sim.expo",
     "ci:test:e2e": "detox test -c ios.sim.release -l verbose --cleanup",
@@ -37,20 +37,25 @@
     "apisauce": "2.0.0",
     "expo": "^44.0.0",
     "expo-barcode-scanner": "~11.2.0",
+    "expo-dev-client": "~0.8.4",
     "expo-linear-gradient": "~11.0.3",
     "expo-localization": "~12.0.0",
     "expo-modules-core": "~0.6.4",
+    "expo-splash-screen": "~0.14.1",
     "expo-status-bar": "~1.2.0",
     "i18n-js": "3.8.0",
     "mobx": "6.1.8",
     "mobx-react-lite": "3.2.0",
     "mobx-state-tree": "5.0.1",
     "react": "17.0.1",
+    "react-dom": "17.0.1",
     "react-native": "0.64.3",
     "react-native-gesture-handler": "~2.1.0",
     "react-native-keychain": "6.2.0",
+    "react-native-nfc-manager": "^3.13.2",
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.10.1",
+    "react-native-web": "0.17.1",
     "reactotron-mst": "3.1.4",
     "reactotron-react-js": "^3.3.7",
     "reactotron-react-native": "5.0.1",
@@ -189,6 +194,5 @@
       "react/prop-types": "off",
       "space-before-function-paren": 0
     }
-  },
-  "main": "node_modules/expo/AppEntry.js"
+  }
 }

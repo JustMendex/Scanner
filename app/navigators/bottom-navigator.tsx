@@ -38,13 +38,13 @@ export const BottomNavigationBar = () => {
           tabBarActiveTintColor: color.primary,
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name={"rfid"}
         component={RfidScreen}
         options={{
           tabBarActiveTintColor: color.primary,
         }}
-      />
+      /> */}
     </Tab.Navigator>
   )
 }

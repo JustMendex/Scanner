@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from "react"
 import { observer } from "mobx-react-lite"
-import { ViewStyle, TouchableOpacity, Platform, View } from "react-native"
+import { ViewStyle, TouchableOpacity, View } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { NavigatorParamList } from "../../navigators"
 import { Screen, Text } from "../../components"
@@ -8,7 +8,7 @@ import NfcManager, { NfcEvents } from "react-native-nfc-manager"
 // import { useNavigation } from "@react-navigation/native"
 // import { useStores } from "../../models"
 import { color } from "../../theme"
-
+import axios from "axios"
 const ROOT: ViewStyle = {
   backgroundColor: color.transparent,
   flex: 1,
@@ -31,12 +31,37 @@ export const RfidScreen: FC<StackScreenProps<NavigatorParamList, "rfid">> = obse
 
     // Pull in navigation via hook
     // const navigation = useNavigation()
-    const [tagId, setTagId] = React.useState('')
+    const [tagId, setTagId] = React.useState("")
+    const [Msg, setMsg] = React.useState("")
+    const [loading, setLoading] = React.useState(false)
+
     useEffect(() => {
       NfcManager.start()
-      NfcManager.setEventListener(NfcEvents.DiscoverTag, (tag) => {
-        console.warn("tag", tag)
+      NfcManager.setEventListener(NfcEvents.DiscoverTag, async (tag) => {
+        //console.warn("tag", tag)
         setTagId(tag.id)
+        try {
+          console.log("goes through")
+
+          const response = await axios.post(
+            "http://192.168.1.181:3000/api/P6MXWJD9HRJ5VL1MESMU/rfidScan",
+            { rfid: tag.id },
+          )
+
+          setMsg("Carte est valide")
+          setLoading(true)
+
+          console.log("response data is: ", response.data.ticket.zone)
+        } catch (err) {
+          if (err.response.status === 404) {
+            setMsg("Carte n'est pas valide")
+            setLoading(true)
+          } else if (err.response.status === 403) {
+            setMsg("Cette carte à été scanné plusieurs fois")
+            setLoading(true)
+          }
+        }
+
         NfcManager.setAlertMessage("I got your tag!")
         NfcManager.unregisterTagEvent().catch(() => 0)
       })
@@ -53,7 +78,7 @@ export const RfidScreen: FC<StackScreenProps<NavigatorParamList, "rfid">> = obse
 
     async function _cancel() {
       NfcManager.unregisterTagEvent().catch(() => 0)
-      setTagId('')
+      setLoading(false)
     }
 
     return (
@@ -61,20 +86,47 @@ export const RfidScreen: FC<StackScreenProps<NavigatorParamList, "rfid">> = obse
         <View style={{ padding: 20 }}>
           <Text>NFC Demo</Text>
           <TouchableOpacity
-            style={{ padding: 10, width: 200, margin: 20, borderWidth: 1, borderColor: "black" }}
+            style={{
+              padding: 10,
+              width: 200,
+              margin: 20,
+              borderWidth: 1,
+              borderColor: "black",
+              borderRadius: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "blue",
+            }}
             onPress={_test}
           >
-            <Text style={{ fontSize: 24, color: "black" }}>Run a check</Text>
+            <Text style={{ fontSize: 24, color: "white" }}>Scanner</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={{ padding: 10, width: 200, margin: 20, borderWidth: 1, borderColor: "black" }}
+            style={{
+              padding: 10,
+              width: 200,
+              margin: 20,
+              borderWidth: 1,
+              borderColor: "black",
+              borderRadius: 30,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
             onPress={_cancel}
           >
-            <Text style={{ fontSize: 24, color: "black" }}>Cancel Test</Text>
+            <Text style={{ fontSize: 24, color: "black" }}>Réinitialiser</Text>
           </TouchableOpacity>
-
-          <Text  style={{ fontSize: 24, color: "black" }}>NFC tag id is {tagId}</Text>
+          <View style={{ padding: 10, margin: 16 }}>
+            {loading ? (
+              <Text style={{ fontSize: 24, color: "black", padding: 10 }}>
+                Les informations du tag id is {tagId} {"\n"}
+                L'état du billet est {Msg}
+              </Text>
+            ) : (
+              <Text></Text>
+            )}
+          </View>
         </View>
       </Screen>
     )

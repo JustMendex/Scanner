@@ -48,7 +48,6 @@ const btnTap: ViewStyle = {
   width: "100%",
   height: "5%",
   backgroundColor: "blue",
-  fontSize: 24,
 }
 
 const modalView: ViewStyle = {
@@ -70,12 +69,17 @@ const modalView: ViewStyle = {
 const modalText: TextStyle = {
   marginBottom: 15,
   textAlign: "center",
-  fontSize: 18,
+  fontSize: 24,
   fontWeight: "bold",
-  color: "black",
+  color: "white",
 }
 
-const modalCancelText: TextStyle = { color: "white", fontWeight: "bold", textAlign: "center" }
+const modalCancelText: TextStyle = {
+  color: "white",
+  fontWeight: "bold",
+  textAlign: "center",
+  fontSize: 24,
+}
 
 // STOP! READ ME FIRST!
 // To fix the TS error below, you'll need to add the following things in your navigation config:
@@ -96,6 +100,7 @@ export const CodebarScreen: FC<StackScreenProps<NavigatorParamList, "codebar">> 
     const [Msg, setMsg] = useState("")
     const [modalVisible, setModalVisible] = useState(false)
     const [colorStatus, setColorStatus] = useState("white")
+    const [zone, setZone] = useState("")
 
     useEffect(() => {
       ;(async () => {
@@ -117,12 +122,14 @@ export const CodebarScreen: FC<StackScreenProps<NavigatorParamList, "codebar">> 
 
       try {
         const response = await axios.post(
-          "https://api.casaticketing.ma/api/P6MXWJD9HRJ5VL1MESMU/barCodeScan",
+          "https://api.staging.casaticketing.ma/api/P6MXWJD9HRJ5VL1MESMU/barCodeScan",
           { barcode: data },
         )
-        const { message } = response.data
+        // const { message } = response.data
+
+        setZone(response.data.ticket.zone)
         setMsg("Ce billet est valide")
-        console.log('Ce billet est valide"')
+
         setColorStatus("green")
         setModalVisible(true)
         //setScanned(false)
@@ -134,6 +141,7 @@ export const CodebarScreen: FC<StackScreenProps<NavigatorParamList, "codebar">> 
 
           setColorStatus("red")
           setModalVisible(true)
+          setZone("")
         } else if (err.response.status === 403) {
           setScanned(true)
           setMsg("Ce billet à été scanné plusieurs fois")
@@ -170,7 +178,6 @@ export const CodebarScreen: FC<StackScreenProps<NavigatorParamList, "codebar">> 
         )}
 
         <Modal
-          animationType="fade"
           //animationInTiming = {13900}
           // transparent={true}
 
@@ -195,7 +202,7 @@ export const CodebarScreen: FC<StackScreenProps<NavigatorParamList, "codebar">> 
               }}
             >
               <Text style={modalText}>
-                {Msg} {dataText}
+                {Msg} {dataText} Le zone est {zone}
               </Text>
 
               <TouchableHighlight

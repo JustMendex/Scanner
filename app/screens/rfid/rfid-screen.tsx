@@ -38,26 +38,26 @@ export const RfidScreen: FC<StackScreenProps<NavigatorParamList, "rfid">> = obse
     useEffect(() => {
       NfcManager.start()
       NfcManager.setEventListener(NfcEvents.DiscoverTag, async (tag) => {
-        //console.warn("tag", tag)
+        console.warn("tag", tag)
         setTagId(tag.id)
         try {
           console.log("goes through")
 
           const response = await axios.post(
-            "http://192.168.1.181:3000/api/P6MXWJD9HRJ5VL1MESMU/rfidScan",
+            "https://api.staging.casaticketing.ma/api/P6MXWJD9HRJ5VL1MESMU/rfidScan",
             { rfid: tag.id },
           )
-
-          setMsg("Carte est valide")
+          setMsg("Carte  valide avec zone " + response.data.ticket.zone)
           setLoading(true)
+          console.log("goes through axios", response.data.ticket.zone)
 
           console.log("response data is: ", response.data.ticket.zone)
         } catch (err) {
           if (err.response.status === 404) {
             setMsg("Carte n'est pas valide")
             setLoading(true)
-          } else if (err.response.status === 403) {
-            setMsg("Cette carte à été scanné plusieurs fois")
+          } else if (err.response.status === 400) {
+            setMsg("Carte existe pas")
             setLoading(true)
           }
         }
@@ -121,7 +121,7 @@ export const RfidScreen: FC<StackScreenProps<NavigatorParamList, "rfid">> = obse
             {loading ? (
               <Text style={{ fontSize: 24, color: "black", padding: 10 }}>
                 Les informations du tag id is {tagId} {"\n"}
-                L'état du billet est {Msg}
+                L'état du carte est {Msg}
               </Text>
             ) : (
               <Text></Text>
